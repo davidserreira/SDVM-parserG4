@@ -1,4 +1,4 @@
-# SDVM-parser
+# SDVM-parserG4
 
 Parser para a linguagem **SDVM**, desenvolvido no âmbito da UC de Manutenção e Evolução de Software.
 
@@ -8,7 +8,7 @@ A especificação da linguagem (gramática e exemplos) **não é nossa**: vem do
 ## Estrutura
 
 ```
-SDVM-parser/
+SDVM-parserG4/
 ├── spec/                 ← submódulo: gramática da turma (NÃO editar)
 │   ├── README.md         (gramática BNF)
 │   └── examples/         (programas de exemplo, usados como testes)
@@ -22,7 +22,7 @@ SDVM-parser/
 ## Setup (primeira vez)
 
 ```bash
-git clone --recurse-submodules https://github.com/davidserreira/SDVM-parser.git
+git clone --recurse-submodules https://github.com/davidserreira/SDVM-parserG4.git
 ```
 
 Se já clonaram sem `--recurse-submodules` e a pasta `spec/` está vazia:
