@@ -1,0 +1,18 @@
+# Haskell
+dist-newstyle/
+.stack-work/
+*.hi
+*.o
+*.dyn_hi
+*.dyn_o
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
