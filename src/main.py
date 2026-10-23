@@ -1,6 +1,6 @@
 """Faz o parsing de programas SDVM e imprime a AST em árvore.
 
-Uso (a partir de src/david, com o venv ativo):
+Uso (a partir de src, com o venv ativo):
   python main.py <ficheiro> [<ficheiro> ...]   imprime a AST de cada ficheiro
   python main.py --all                         testa todos os exemplos da spec (OK/FALHA)
 """
@@ -11,9 +11,11 @@ from pathlib import Path
 
 from parsy import ParseError
 
-from parser_sdvm_david import program
+from parser_sdvm import program
 
-EXAMPLES = Path(__file__).resolve().parents[2] / "spec" / "examples"
+# ALTERADO (23/10/2026): era `parents[2]` quando o ficheiro estava numa subpasta de src.
+# Agora está em src, por isso `parents[1]` já é a raiz do repositório.
+EXAMPLES = Path(__file__).resolve().parents[1] / "spec" / "examples"
 
 
 def show(node, indent=0):

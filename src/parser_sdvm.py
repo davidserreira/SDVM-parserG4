@@ -1,5 +1,5 @@
 # Parser da linguagem SDVM com parser combinators (parsy).
-# Gramática: spec/README.md (repositório da turma). AST: ast_sdvm_david.py.
+# Gramática: spec/README.md (repositório da turma). AST: ast_sdvm.py.
 #
 # Cada não-terminal da gramática tem um parser com o mesmo nome. As produções
 # `*_tail` não aparecem: são a forma recursiva à direita de `X (op X)*`, que aqui
@@ -14,7 +14,7 @@ from functools import reduce
 
 from parsy import alt, eof, fail, forward_declaration, generate, regex, seq, string, success
 
-from ast_sdvm_david import *
+from ast_sdvm import *
 
 # --------------------------------------------------------------------- Léxico
 
