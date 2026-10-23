@@ -35,9 +35,12 @@ def symbol(s):
     return lexeme(string(s))
 
 
-def operators(*ops):
+# ALTERADO (23/10/2026): antes recebia só os símbolos e devolvia a string do
+# operador (para o `op` do `Binary`). Agora recebe um dicionário símbolo -> classe
+# do nó, e cada símbolo devolve a sua classe: é o `Add <$ symbol "+"` da teórica.
+def operators(table):
     """Alternativa entre operadores. Os mais compridos têm de vir primeiro (`<=` antes de `<`)."""
-    return alt(*(symbol(op) for op in ops))
+    return alt(*(symbol(op).result(node) for op, node in table.items()))
 
 
 KEYWORDS = {
@@ -87,12 +90,13 @@ unary = forward_declaration()
 
 def left(ops, operand):
     """Combinador `left` da teórica (secção 2.4): operand (ops operand)*,
-    dobrado da esquerda com `reduce` para ficar associativo à esquerda."""
+    dobrado da esquerda com `reduce` para ficar associativo à esquerda.
+    Cada par de `rest` é (classe do nó, operando direito), p.ex. (Sub, IntLit(3))."""
     @generate
     def parser():
         first = yield operand
         rest = yield seq(ops, operand).many()
-        return reduce(lambda acc, op_right: Binary(op_right[0], acc, op_right[1]), rest, first)
+        return reduce(lambda acc, op_right: op_right[0](acc, op_right[1]), rest, first)
     return parser
 
 
@@ -126,18 +130,20 @@ def postfix():
 
 
 cast = seq(symbol("(") >> type_ << symbol(")"), unary).combine(Cast)
-unary_operation = seq(operators("+", "-", "!"), unary).combine(Unary)
+unary_operation = seq(
+    operators({"+": Pos, "-": Neg, "!": Not}), unary
+).combine(lambda node, operand: node(operand))
 
 # O cast vem antes de `postfix`, porque `(int) x` e `(x)` começam ambos por `(`.
 # Unários e casts são recursivos à direita, logo associativos à direita.
 unary.become(unary_operation | cast | postfix)
 
-multiplicative = left(operators("*", "/", "%"), unary)
-additive = left(operators("+", "-"), multiplicative)
-comparison = left(operators("<=", ">=", "<", ">"), additive)
-equality = left(operators("==", "!="), comparison)
-logical_and = left(operators("&&"), equality)
-expression.become(left(operators("||"), logical_and))
+multiplicative = left(operators({"*": Mul, "/": Div, "%": Mod}), unary)
+additive = left(operators({"+": Add, "-": Sub}), multiplicative)
+comparison = left(operators({"<=": Le, ">=": Ge, "<": Lt, ">": Gt}), additive)
+equality = left(operators({"==": Eq, "!=": Neq}), comparison)
+logical_and = left(operators({"&&": And}), equality)
+expression.become(left(operators({"||": Or}), logical_and))
 
 # --------------------------------------------------------------------- Declarações
 

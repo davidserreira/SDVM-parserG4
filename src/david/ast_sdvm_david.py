@@ -4,18 +4,19 @@ from typing import Literal
 type Type = Literal["int", "double", "char", "bool"]
 type ReturnType = Type | Literal["void"]
 
-type UnaryOp = Literal["+", "-", "!"]
-type BinaryOp = Literal[
-    "||", "&&",                 # lógicos
-    "==", "!=",                 # igualdade
-    "<", "<=", ">", ">=",       # comparação
-    "+", "-",                   # aditivos
-    "*", "/", "%",              # multiplicativos
-]
-
+# ALTERADO (23/10/2026): antes havia um `Unary(op, operand)` e um
+# `Binary(op, left, right)`, com o operador guardado num campo (`UnaryOp` e
+# `BinaryOp`, dois `Literal`). Agora há uma classe por operador, como o
+# `Add`/`Mul` da teórica e do TP5: o operador fica no tipo do nó.
 type Exp = (
     IntLit | FloatLit | CharLit | StringLit | BoolLit
-    | Var | Index | Call | Unary | Cast | Binary
+    | Var | Index | Call | Cast
+    | Pos | Neg | Not                            # unários
+    | Or | And                                   # lógicos
+    | Eq | Neq                                   # igualdade
+    | Lt | Le | Gt | Ge                          # comparação
+    | Add | Sub                                  # aditivos
+    | Mul | Div | Mod                            # multiplicativos
 )
 
 type Stmt = (
@@ -66,18 +67,88 @@ class Call:                 # function_call -> primary "(" argument_list_optiona
     args: list[Exp]
 
 @dataclass
-class Unary:                # unary -> unary_operator unary
-    op: UnaryOp
-    operand: Exp
-
-@dataclass
 class Cast:                 # unary -> "(" type ")" unary
     target: Type
     operand: Exp
 
+# Unários: unary -> unary_operator unary
+
 @dataclass
-class Binary:               # todos os níveis binários, de `||` a `*`
-    op: BinaryOp
+class Pos:                  # +e
+    operand: Exp
+
+@dataclass
+class Neg:                  # -e
+    operand: Exp
+
+@dataclass
+class Not:                  # !e
+    operand: Exp
+
+# Binários, do nível de precedência mais fraco (`||`) para o mais forte (`*`)
+
+@dataclass
+class Or:                   # ||
+    left: Exp
+    right: Exp
+
+@dataclass
+class And:                  # &&
+    left: Exp
+    right: Exp
+
+@dataclass
+class Eq:                   # ==
+    left: Exp
+    right: Exp
+
+@dataclass
+class Neq:                  # !=
+    left: Exp
+    right: Exp
+
+@dataclass
+class Lt:                   # <
+    left: Exp
+    right: Exp
+
+@dataclass
+class Le:                   # <=
+    left: Exp
+    right: Exp
+
+@dataclass
+class Gt:                   # >
+    left: Exp
+    right: Exp
+
+@dataclass
+class Ge:                   # >=
+    left: Exp
+    right: Exp
+
+@dataclass
+class Add:                  # +
+    left: Exp
+    right: Exp
+
+@dataclass
+class Sub:                  # -
+    left: Exp
+    right: Exp
+
+@dataclass
+class Mul:                  # *
+    left: Exp
+    right: Exp
+
+@dataclass
+class Div:                  # /
+    left: Exp
+    right: Exp
+
+@dataclass
+class Mod:                  # %
     left: Exp
     right: Exp
 
